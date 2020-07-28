@@ -1,0 +1,355 @@
+\documentclass[twocolumn, uplatex, dvipdfmx]{jsarticle}
+
+% 参照確認用
+% \usepackage{refcheck}
+
+% AMS系，定理環境，太字
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{bm}
+
+% フォント・スクリプト文字
+\usepackage{newtxtext, newtxmath}
+\usepackage{mathrsfs}
+
+% 図・表・箇条書き
+\usepackage{tikz}
+\usepackage{booktabs}
+\usepackage{enumerate}
+\usepackage{graphicx}
+
+% アルゴリズム
+\usepackage{algorithm, algorithmic}
+
+% 索引
+\usepackage{makeidx}
+
+% その他
+\usepackage{url, color}
+
+% 不等号のデザイン変更
+\renewcommand{\ge}{\geqslant}
+\renewcommand{\le}{\leqslant}
+
+% 数式環境の改行を許す．
+\allowdisplaybreaks[4]
+
+% 数式番号を "(節番号.数式番号)" とする．
+\numberwithin{equation}{section}
+
+% jsarticleのための付録の表示調整
+%
+% 付録は以下のように書く
+% > \section{ ...通常の節... }
+% > ......
+% > \section{ ...通常の節... }
+% >
+% > % 付録開始
+% > \appendix
+% > \AppendixSection{ ...付録の節... }
+% > ......
+% > \AppendixSection{ ...付録の節... }
+\newcommand{\AppendixSection}[1]{
+\def\thesection{付録\Alph{section}} %
+\section{#1} %
+\def\thesection{\Alph{section}}}
+
+% 定理環境設定
+\theoremstyle{definition}
+
+\newtheorem{prop}{Proposition}[section]
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lem}{Lemma}[section]
+
+\begin{document}
+
+\section{Number theoretic transform の導出}
+
+$n,m$ を自然数とし，$N=2^m$ とする．
+$R=\mathbb{Z}/n\mathbb{Z}$ は $\omega_N^N=1$ を満たす $\omega_N\in R$ をもつとする．
+$(f_k)_{k=0,1,\dots,N-1}$ を $R$ の点列とし，
+\begin{align}
+	F_k=\sum_{j=0}^{N-1}\omega_N^{jk}f_j,\quad k=0,1,\dots,N-1\label{eq:F_k}
+\end{align}
+とする．
+本稿では，$(f_k)$ から $(F_k)$ の効率的な計算方法について述べる．
+素朴に計算をすれば，$\omega_N^{jk}$ の計算が $O(1)$ であってさえ，全体の計算量は $O(N^2)$ である．
+
+\begin{lem}\label{lem:omega_exists}
+	$n,m$ を自然数とし，$N=2^m$ とする．
+	$R=\mathbb{Z}/n\mathbb{Z}$ は $\omega_N^N=1$ を満たす $\omega_N\in R$ をもつとする．
+	このとき，$0\le l\le m$ について，$\omega_{N/2^l}^{N/2^l}=1$ を満たす $\omega_{N/2^l}\in R$ が存在する．
+\end{lem}
+\begin{proof}
+	$0\le l\le m$ とする．$(\omega_N^{2^{m-l}})^{2^l}=\omega_N^{2^m}=\omega_N^N=1$ より，$\omega_{N/2^l}=\omega_N^{2^{m-l}}\in R$ である．
+\end{proof}
+
+\begin{lem}\label{lem:omega_square}
+	$l=0,1,\dots,m-1$ について，$\omega_{N/2^l}^2=\omega_{N/2^{l+1}}$ である．
+\end{lem}
+\begin{proof}
+	$l=0,1,\dots,m-1$ とする．$(\omega_{N/2^l}^2)^{N/2^{l+1}}=\omega_{N/2^l}^{N/2^l}=1$ である．
+\end{proof}
+
+\begin{lem}\label{lem:omega_-1}
+	$l=0,1,\dots,m-1$ について，$\omega_{N/2^l}^{N/2^{l+1}}=-1$ である．
+\end{lem}
+\begin{proof}
+	$l=0,1,\dots,m-1$ とする．$(\omega_{N/2^l}^{N/2^{l+1}})^2=\omega_{N/2^l}^{N/2^l}=1$ である．
+	よって，$\omega_{N/2^l}^{N/2^{l+1}}=-1$ である．
+\end{proof}
+
+\begin{prop}\label{prop:eo}
+	$0\le k\le N/2-1$ とする．
+	$F_k^e$, $F_k^o$ を，
+	\begin{align}
+		&F_k^e=\sum_{j=0}^{N/2-1}\omega_{N/2}^{jk}f_{2j},\\
+		&F_k^o=\sum_{j=0}^{N/2-1}\omega_{N/2}^{jk}f_{2j+1}
+	\end{align}
+	とすると，
+	\begin{align}
+		&F_k=F_k^e+\omega^kF_k^o,\\
+		&F_{k+N/2}=F_k^e-\omega^kF_k^o,
+	\end{align}
+	が成り立つ．
+\end{prop}
+\begin{proof}
+	\begin{align*}
+		F_k&=\sum_{j=0}^{N-1}\omega_N^{jk}f_j\\
+		&=\sum_{j=0,2,\dots,N-2}\omega_N^{jk}f_j+\sum_{j=1,3,\dots,N-1}\omega_N^{jk}f_j\\
+		&=\sum_{j=0}^{N/2-1}\omega_N^{2jk}f_{2j}+\sum_{j=0}^{N/2-1}\omega_N^{(2j+1)k}f_{2j+1}\\
+		&=\sum_{j=0}^{N/2-1}(\omega_N^2)^{jk}f_{2j}+\sum_{j=0}^{N/2-1}\omega_N^k(\omega_N^2)^{jk}f_{2j+1}
+	\end{align*}
+	であるが，補題\ref{lem:omega_square}より，
+	\begin{align*}
+		F_k&=\sum_{j=0}^{N-1}\omega_N^{jk}f_j\notag\\
+		&=\sum_{j=0}^{N/2-1}\omega_{N/2}^{jk}f_{2j}+\omega_N^k\sum_{j=0}^{N/2-1}\omega_{N/2}^{jk}f_{2j+1}\\
+		&=F_k^e+\omega^kF_k^o
+	\end{align*}
+	である．
+	また，
+	\begin{align*}
+		&F_{k+N/2}\\
+		&=\sum_{j=0}^{N-1}\omega_N^{j(k+N/2)}f_j\notag\\
+		&=\sum_{j=0}^{N/2-1}\omega_{N/2}^{j(k+N/2)}f_{2j}+\omega_N^{k+N/2}\sum_{j=0}^{N/2-1}\omega_{N/2}^{j(k+N/2)}f_{2j+1}
+	\end{align*}
+	において，$j=0,1,\dots,N/2-1$ について $\omega_{N/2}^{j(k+N/2)}=\omega_{N/2}^{jk}(\omega_{N/2}^{N/2})^k=\omega_{N/2}^{jk}$ であることと，$\omega_N^{k+N/2}=\omega_N^k\omega_N^{N/2}$ と補題\ref{lem:omega_-1}より，
+	\begin{align*}
+		&F_{k+N/2}\\
+		&=\sum_{j=0}^{N/2-1}\omega_{N/2}^{jk}f_{2j}-\omega_N^k\sum_{j=0}^{N/2-1}\omega_{N/2}^{jk}f_{2j+1}\\
+		&=F_k^e-\omega^kF_k^o
+	\end{align*}
+	である．
+\end{proof}
+
+\begin{thm}
+	$1\le l\le m$ とし，$b_i\in\{e,o\}$, $i=0,1,\dots,l-1$ とする．
+	$B:\{e,o\}\to\{0,1\}$ を，
+	\begin{align}
+		B(b)=\begin{cases}
+			0,&\quad b=e,\\
+			1,&\quad b=o
+		\end{cases}
+	\end{align}
+	で定める．
+	$F_k^{b_0b_1\cdots b_{l-1}}$ を
+	\begin{align}
+		F_k^{b_0b_1\cdots b_{l-1}}=\sum_{j=0}^{N/2^l-1}f_{2^lj+\sum_{i=0}^{l-1}2^iB(b_i)}\omega_{N/2^l}^{jk}
+	\end{align}
+	とするとき，$0\le k<N-N/2^{l+1}$, $1\le l<m$ ならば，
+	\begin{align}
+		&F_k^{b_0b_1\cdots b_{l-1}}\notag\\
+		&\quad=F_k^{b_0b_1\cdots b_{l-1}e}+\omega_{N/2^l}^kF_k^{b_0b_1\cdots b_{l-1}o},\\
+		&F_{k+N/2^{l+1}}^{b_0b_1\cdots b_{l-1}}\notag\\
+		&\quad=F_k^{b_0b_1\cdots b_{l-1}e}-\omega_{N/2^l}^kF_k^{b_0b_1\cdots b_{l-1}o}
+	\end{align}
+	が成り立つ．
+\end{thm}
+\begin{proof}
+	$0\le l<m$ とする．
+	まず，
+	\begin{align*}
+		&F_k^{b_0b_1\cdots b_{l-1}}\\
+		&=\sum_{j=0}^{N/2^l-1}f_{2^lj+\sum_{i=0}^{l-1}2^iB(b_i)}\omega_{N/2^l}^{jk}\\
+		&=\sum_{j=0,2,\dots,N/2^l-2}f_{2^lj+\sum_{i=0}^{l-1}2^iB(b_i)}\omega_{N/2^l}^{jk}\\
+		&\quad+\sum_{j=1,3,\dots,N/2^l-1}f_{2^lj+\sum_{i=0}^{l-1}2^iB(b_i)}\omega_{N/2^l}^{jk}\\
+		&=\sum_{j=0}^{N/2^{l+1}-1}f_{2^l\cdot2j+\sum_{i=0}^{l-1}2^iB(b_i)}\omega_{N/2^l}^{2jk}\\
+		&\quad+\sum_{j=0}^{N/2^{l+1}-1}f_{2^l(2j+1)+\sum_{i=0}^{l-1}2^iB(b_i)}\omega_{N/2^l}^{(2j+1)k}\\
+		&=\sum_{j=0}^{N/2^{l+1}-1}f_{2^{l+1}j+2^lB(e)+\sum_{i=0}^{l-1}2^iB(b_i)}\omega_{N/2^{l+1}}^{jk}\\
+		&\quad+\omega_{N/2^l}^k\sum_{j=0}^{N/2^{l+1}-1}f_{2^{l+1}j+2^lB(o)+\sum_{i=0}^{l-1}2^iB(b_i)}\omega_{N/2^{l+1}}^{jk}\\
+		&=F_k^{b_0b_1\cdots b_{l-1}e}+\omega_{N/2^l}^kF_k^{b_0b_1\cdots b_{l-1}o}
+	\end{align*}
+	である．
+	一方，
+	\begin{align*}
+		&F_{k+N/2^{l+1}}^{b_0b_1\cdots b_{l-1}}\\
+		&=\sum_{j=0}^{N/2^{l+1}-1}f_{2^{l+1}j+2^lB(e)+\sum_{i=0}^{l-1}2^iB(b_i)}\omega_{N/2^{l+1}}^{j(k+N/2^{l+1})}\\
+		&\quad+\omega_{N/2^l}^{k+N/2^{l+1}}\\
+		&\quad\quad\times\sum_{j=0}^{N/2^{l+1}-1}f_{2^{l+1}j+2^lB(o)+\sum_{i=0}^{l-1}2^iB(b_i)}\omega_{N/2^{l+1}}^{j(k+N/2^{l+1})}
+	\end{align*}
+	であるが，$\omega_{N/2^{l+1}}^{k+N/2^{l+1}}=\omega_{N/2^{l+1}}^k\omega_{N/2^{l+1}}^{N/2^{l+1}}=\omega_{N/2^{l+1}}^k$ であることと，$\omega_{N/2^l}^{k+N/2^{l+1}}=\omega_{N/2^l}^k\omega_{N/2^l}^{N/2^{l+1}}$ と補題\ref{lem:omega_-1}より，
+	\begin{align*}
+		&F_{k+N/2^{l+1}}^{b_0b_1\cdots b_{l-1}}\\
+		&=\sum_{j=0}^{N/2^{l+1}-1}f_{2^{l+1}j+2^lB(e)+\sum_{i=0}^{l-1}2^iB(b_i)}\omega_{N/2^{l+1}}^{jk}\\
+		&\quad-\omega_{N/2^l}^k\\
+		&\quad\quad\times\sum_{j=0}^{N/2^{l+1}-1}f_{2^{l+1}j+2^lB(o)+\sum_{i=0}^{l-1}2^iB(b_i)}\omega_{N/2^{l+1}}^{jk}\\
+		&=F_k^{b_0b_1\cdots b_{l-1}e}-\omega_{N/2^l}^kF_k^{b_0b_1\cdots b_{l-1}o}
+	\end{align*}
+	である．
+\end{proof}
+
+\begin{lem}
+	$0\le k\le N-1$ について，
+	$F_k^{b_0b_1\cdots b_{m-1}}=f_{\sum_{j=0}^{m-1}2^jB(b_j)}$ である．
+\end{lem}
+\begin{proof}
+	定義より，
+	\begin{align*}
+		F_k^{b_0b_1\cdots b_{m-1}}&=\sum_{j=0}^0f_{\sum_{i=0}^{m-1}2^iB(b_i)}\omega_{N/2^m}^{jk}\\
+		&=f_{\sum_{j=0}^{m-1}2^jB(b_j)}
+	\end{align*}
+	である．
+\end{proof}
+
+\begin{thm}
+	$\mathcal{B}=B^{-1}$ とする．
+	$R_m:\mathbb{N}\to\mathbb{N}$ を，$k=\sum_{j=0}^{m-1}2^ja_j$, $a_j\in\{0,1\}$, $0\le j\le m-1$ に対して，$R_m(k)=\sum_{j=0}^{m-1}2^{m-1-j}a_j$ と定める写像とする．
+	\begin{align}
+		&F_k^{(0)}=f_{R_m(k)},\quad k=0,1,\dots,2^m-1,\\
+		&F_k^{(m)}=F_k,\quad k=0,1,\dots,2^m-1
+	\end{align}
+	とする．
+	$0\le k\le 2^m-1$, $1\le l\le m-1$ について，$k=2^lq+r$, $0\le r<2^l$,
+	\begin{align}
+		q=\sum_{j=0}^{m-l-1}2^ja'_j,\quad a'_j\in\{0,1\},\quad 0\le j\le m-l-1
+	\end{align}
+	として，
+	\begin{align}
+		F_k^{(l)}=F_r^{\mathcal{B}(a'_{m-l-1})\mathcal{B}(a'_{m-l-2})\cdots\mathcal{B}(a'_0)}
+	\end{align}
+	とする．
+	このとき，$l=1,2,\dots,m-1$ について，$k=2^lq+r$, $r=0,1,\dots,2^{l-1}-1$, $q=0,1,\dots,2^{m-l-1}$ において，
+	\begin{align}
+		&F_k^{(l)}=F_k^{(l-1)}+\omega_{N/2^{m-l}}^rF_{k+2^{l-1}}^{(l-1)},\\
+		&F_{k+2^{l-1}}^{(l)}=F_k^{(l-1)}-\omega_{N/2^{m-l}}^rF_{k+2^{l-1}}^{(l-1)}
+	\end{align}
+	が成り立つ．
+\end{thm}
+\begin{proof}
+	$l=1$ のときを示す．$k=2q$, $0\le q\le 2^{m-2}$ とする．
+	$k=\sum_{j=0}^{m-1}2^ja_j$ とすると，$a_0=0$ であるため，$k=\sum_{j=1}^{m-1}2^ja_j+0$, $k+1=\sum_{j=1}^{m-1}2^ja_j+1$ であり，$R_m(k+1)=R_m(k)+2^{m-1}=R_m(k)+N/2$ である．
+	よって，$F_k^{(0)}=f_{R_m(k)}$ および，
+	\begin{align*}
+		\omega_{N/2^{m-1}}^kF_{k+1}^{(0)}&=f_{R_m(k)}+\omega_{N/2^{m-1}}^kf_{R_m(k+1)}\\
+		&=\omega_{N/2^{m-1}}^kf_{R_m(k)+N/2}\\
+		&=\omega_2^{2q}f_{R_m(k)+N/2}\\
+		&=(\omega_2^2)^qf_{R_m(k)+N/2}\\
+		&=f_{R_m(k)+N/2}
+	\end{align*}
+	である．
+	一方，$k=2q$, $q=\sum_{j=0}^{m-2}2^ja'_j$ とすると，$a'_j=a_{j+1}$ なので，$\sum_{i=0}^{m-2}2^{m-2-i}a'_i=\sum_{i=0}^{m-2}2^{m-2-i}a_{i+1}=\sum_{i=1}^{m-1}2^{m-1-i}a_i=R_m(k)$ より，
+	\begin{align*}
+		F_k^{(1)}&=F_0^{\mathcal{B}(a'_{m-2})\mathcal{B}(a'_{m-3})\cdots\mathcal{B}(a'_0)}\\
+		&=f_{\sum_{i=0}^{m-2}2^{m-2-i}a'_i}+\omega_{N/2^{m-1}}^0f_{2^{m-1}+\sum_{i=0}^{m-2}2^{m--2-i}a'_i}\\
+		&=f_{\sum_{i=0}^{m-2}2^{m-2-i}a'_i}+f_{2^{m-1}+\sum_{i=0}^{m-2}2^{m-2-i}a'_i}\\
+		&=f_{R_m(k)}+f_{N/2+R_m(k)}\\
+		&=F_k^{(0)}+\omega_{N/2^{m-1}}^kF_{k+1}^{(0)}
+	\end{align*}
+	によって成り立つ．
+	また，
+	\begin{align*}
+		F_{k+1}^{(l)}&=F_1^{\mathcal{B}(a'_{m-2})\mathcal{B}(a'_{m-3})\cdots\mathcal{B}(a'_0)}\\
+		&=f_{\sum_{i=0}^{m-2}2^{m-2-i}a'_i}+\omega_{N/2^{m-1}}^1f_{2^{m-1}+\sum_{i=0}^{m-2}2^{m-2-i}a'_i}\\
+		&=f_{\sum_{i=0}^{m-2}2^{m-2-i}a'_i}+\omega_2^1f_{2^{m-1}+\sum_{i=0}^{m-2}2^{m-2-i}a'_i}\\
+		&=f_{R_m(k)}-f_{N/2+R_m(k)}\\
+		&=F_k^{(0)}-\omega_{N/2^{m-1}}^kF_{k+1}^{(0)}
+	\end{align*}
+	である．
+
+	次に，$2\le l\le m-1$ とする．
+	$k=2^lq+r$, $q=\sum_{j=0}^{m-l-1}2^ja'_j$ とおく．
+	このとき，
+	\begin{align*}
+		F_k^{(l)}&=F_r^{\mathcal{B}(a'_{m-l-1})\mathcal{B}(a'_{m-l-2})\cdots\mathcal{B}(a'_0)}\\
+		&=F_r^{\mathcal{B}(a'_{m-l-1})\mathcal{B}(a'_{m-l-2})\cdots\mathcal{B}(a'_0)e}\\
+		&\quad+\omega_{N/2^l}^k\\
+		&\quad\quad\times F_r^{\mathcal{B}(a'_{m-l-1})\mathcal{B}(a'_{m-l-2})\cdots\mathcal{B}(a'_0)o}
+	\end{align*}
+	である．
+	また，$k=2^{l-1}\hat{q}+\hat{r}$, $\hat{q}=\sum_{j=0}^{m-l}2^j\hat{a}'_j$ とおくと，
+	$\hat{a}'_j=0$, $\hat{a}'_j=a'_{j-1}$, $\hat{r}=r$ より，
+	\begin{align*}
+		F_k^{(l-1)}&=F_r^{\mathcal{B}(\hat{a}'_{m-l})\mathcal{B}(\hat{a}'_{m-l-1})\cdots\mathcal{B}(\hat{a}'_0)}\\
+		&=F_r^{\mathcal{B}(\hat{a}'_{m-l})\mathcal{B}(\hat{a}'_{m-l-1})\cdots\mathcal{B}(\hat{a}'_1)e}\\
+		&=F_r^{\mathcal{B}(a'_{m-l-1})\mathcal{B}(a'_{m-l-2})\cdots\mathcal{B}(a'_0)e}
+	\end{align*}
+	かつ，$k+2^{l-1}=2^{l-1}(\hat{q}+1)+\hat{r}$ より，
+	\begin{align*}
+		F_{k+2^{l-1}}^{(l-1)}&=F_r^{\mathcal{B}(\hat{a}'_{m-l})\mathcal{B}(\hat{a}'_{m-l-1})\cdots\mathcal{B}(\hat{a}'_1)o}\\
+		&=F_r^{\mathcal{B}(a'_{m-l-1})\mathcal{B}(a'_{m-l-2})\cdots\mathcal{B}(a'_0)o}
+	\end{align*}
+	であるため，
+	\begin{align*}
+		F_k^{(l)}=F_k^{(l-1)}+\omega_{N/2^{m-l}}^kF_{k+2^{l-1}}^{(l-1)}
+	\end{align*}
+	が成り立つ．
+	
+	一方，
+	\begin{align*}
+		F_{k+2^{l-1}}^{(l)}&=F_{r+2^{l-1}}^{\mathcal{B}(a'_{m-l-1})\mathcal{B}(a'_{m-l-2})\cdots\mathcal{B}(a'_0)}\\
+		&=F_{r+N/2^{m-l+1}}^{\mathcal{B}(a'_{m-l-1})\mathcal{B}(a'_{m-l-2})\cdots\mathcal{B}(a'_0)}\\
+		&=F_r^{\mathcal{B}(a'_{m-l-1})\mathcal{B}(a'_{m-l-2})\cdots\mathcal{B}(a'_0)e}\\
+		&\quad-\omega_{N/2^{m-l}}^k\\
+		&\quad\quad\times F_r^{\mathcal{B}(a'_{m-l-1})\mathcal{B}(a'_{m-l-2})\cdots\mathcal{B}(a'_0)o}\\
+		&=F_k^{(l-1)}-\omega_{N/2^{m-l}}^kF_{k+2^{l-1}}^{(l-1)}
+	\end{align*}
+	である．
+
+
+	最後に，$l=m$ とする．
+	$k=0,1,\dots,2^{m-1}-1$ とする．
+	$k=2^{m-1}0+k$ より，
+	\begin{align*}
+		&F_k^{(m-1)}+\omega_N^kF_{k+2^{m-1}}^{(m-1)}\\
+		&=F_k^{\mathcal{0}}+\omega_N^kF_k^{\mathcal{1}}\\
+		&=F_k^e+\omega_N^kF_k^o\\
+		&=F_k\\
+		&=F_k^{(m)}
+	\end{align*}
+	であり，
+	\begin{align*}
+		&F_{k+2^{m-1}}^{(m)}\\
+		&=F_{k+2^{m-1}}\\
+		&=F_k^{\mathcal{0}}-\omega_N^kF_k^{\mathcal{1}}\\
+		&=F_k^e-\omega_N^kF_k^o\\
+		&=F_k^{(m-1)}-\omega_N^kF_{k+2^{m-1}}^{(m-1)}
+	\end{align*}
+	である．
+
+	以上より，すべての $l=1,2,\dots,m$ について，主張が示された．
+\end{proof}
+
+\begin{thm}\label{thm:ntt}
+	以下の手順で，$(f_k)$ から $(F_k)$ が求まる．
+	ただし，$a\leftarrow b$ で，$a$ の値を $b$ で上書きすることを表す．
+	\begin{enumerate}
+		\item $(f_0,f_1,\dots,f_{N-1})$\\
+			\quad\quad$\leftarrow (f_{R_m(0)},f_{R_m(1)},\dots,f_{R_m(N-1)})$
+		\item $(f_k,f_{k+2^l})$\\
+			\quad\quad$\leftarrow (f_k+\omega_{N/2^{m-l}}^kf_{k+2^l},f_k-\omega_{N/2^{m-l}}^kf_{k+2^l})$,\\
+			$k=2^lq+r$, $r=0,1,\dots,2^{l-1}-1$,\\
+			$q=0,1,\dots,2^{m-l-1}$, $l=1,2,\dots,m-1$
+		\item $(F_0,F_1,\dots,F_{N-1})\leftarrow (f_0,f_1,\dots,f_{N-1})$.
+	\end{enumerate}
+\end{thm}
+\begin{proof}
+	これまでのの議論から明らか．
+\end{proof}
+
+\begin{prop}
+	定理\ref{thm:ntt}の演算量は，項番1の演算量が $O(N\log_2N)$ であり，$\omega_{N/2^{m-l}}^k$ の演算量が $O(\log_2N)$ であれば，$O(N\log_2N)$ である．
+\end{prop}
+\begin{proof}
+	項番2の反復回数が $O(N\log_2N)$ なので明らか．
+\end{proof}
+
+\end{document}
