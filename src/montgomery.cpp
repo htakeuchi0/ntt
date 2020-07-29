@@ -24,7 +24,7 @@ Montgomery::Montgomery(int n, int log2r) : n_(n), r_(1 << log2r), log2r_(log2r) 
 /*
  * mod R で NN' = -1 を満たす N を計算して返す．
  */
-ll Montgomery::ComputeNn() {
+ll Montgomery::ComputeNn() const {
     ll nn = 0;
     ll i = 1;
     ll t = 0;
@@ -48,7 +48,7 @@ ll Montgomery::ComputeNn() {
  *
  * @param [in] t リダクションを計算する値
  */
-ll Montgomery::Reduction(ll t) {
+ll Montgomery::Reduction(ll t) const {
     t = (t + ((t * nn_) & (r_ - 1))*n_) >> log2r_;
     return (t >= n_) ? t - n_ : t;
 }
@@ -60,7 +60,7 @@ ll Montgomery::Reduction(ll t) {
  * @param [in] b 値
  * @return ll a と b の積
  */
-ll Montgomery::Mult(ll a, ll b) {
+ll Montgomery::Mult(ll a, ll b) const {
     ll c = Reduction(Reduction(a * b) * r2_);
     return c;
 }
@@ -72,7 +72,7 @@ ll Montgomery::Mult(ll a, ll b) {
  * @param [in] k 指数
  * @return ll a の b 乗
  */
-ll Montgomery::Pow(ll a, ll k) {
+ll Montgomery::Pow(ll a, ll k) const {
     ll p = a;
     ll v = 1;
     if (k == 0) {

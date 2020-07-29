@@ -6,6 +6,8 @@
 #ifndef FFT_NTT_HPP_
 #define FFT_NTT_HPP_
 
+#include "include/montgomery.hpp"
+
 /**
  * Number theoretic transform 向け名前空間
  */
@@ -341,6 +343,33 @@ public:
     NttMod19529729Deg131072();
 
     /**
+     * バタフライ演算を実行して結果を返す．
+     *
+     * @param[in, out] a 要素
+     * @param[in, out] b 要素
+     * @param[in] k 指数
+     */
+    virtual void Butterfly(ll& a, ll& b, ll k) const;
+
+    /**
+     * 逆離散フーリエ変換でのバタフライ演算を実行して結果を返す．
+     *
+     * @param[in, out] a 要素
+     * @param[in, out] b 要素
+     * @param[in] k 指数
+     */
+    virtual void ButterflyInv(ll& a, ll& b, ll k) const;
+
+    /**
+     * 数列の要素ごとの積を計算して返す．
+     *
+     * @param[in] a 数列．
+     * @param[in] b 数列．
+     * @param[out] c 数列 a と b の要素ごとの積．
+     */
+    virtual void MultVec(ll *a, ll *b, ll *c) const;
+
+    /**
      * 1 の n 乗根のべき乗を計算して返す．
      *
      * @param[in] k 指数
@@ -355,6 +384,13 @@ public:
      * @return ll 1 の n 乗根の逆数の k 乗
      */
     virtual ll PowPhi(ll k) const;
+
+    /**
+     * 数列の逆離散フーリエ変換を計算して返す．
+     *
+     * @param[in, out] a 数列．変換後の数列を上書きして返す．
+     */
+    virtual void Idft(ll *a) const;
 
 private:
     /** モジュラス */
@@ -374,6 +410,9 @@ private:
 
     /** 次数が 2 の何乗か */
     static constexpr ll kLogN = 17;
+
+    /** モンゴメリ乗算 */
+    MontgomeryMod19529729R25 montgomery_;
 };
 
 /**

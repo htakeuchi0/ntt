@@ -31,14 +31,14 @@ public:
     /**
      * mod R で NN' = -1 を満たす N を計算して返す．
      */
-    ll ComputeNn(); 
+    ll ComputeNn() const; 
 
     /**
      * モンゴメリリダクションを返す．
      *
      * @param [in] t リダクションを計算する値
      */
-    ll Reduction(ll t);
+    ll Reduction(ll t) const;
 
     /**
      * mod N で積を計算して返す．
@@ -47,7 +47,7 @@ public:
      * @param [in] b 値
      * @return ll a と b の積
      */
-    ll Mult(ll a, ll b);
+    ll Mult(ll a, ll b) const;
 
     /**
      * mod N でべき乗を計算して返す．
@@ -56,14 +56,14 @@ public:
      * @param [in] k 指数
      * @return ll a の b 乗
      */
-    ll Pow(ll a, ll k);
+    ll Pow(ll a, ll k) const;
 
     /**
      * モジュラスを返す．
      *
      * @return ll モジュラス
      */
-    ll N() { return n_; }
+    ll N() const { return n_; }
 
 private:
     /** モジュラス N */

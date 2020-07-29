@@ -321,13 +321,88 @@ NttNativeMod19529729Deg131072::NttNativeMod19529729Deg131072() :
 }
 
 /*
+ * 数列の要素ごとの積を計算して返す．
+ *
+ * @param [in] a 数列．
+ * @param [in] b 数列．
+ * @param [out] c 数列 a と b の要素ごとの積．
+ */
+void NttMod19529729Deg131072::MultVec(ll *a, ll *b, ll *c) const {
+    for (ll i = 0; i < n_; i++) {
+        c[i] = montgomery_.Mult(a[i], b[i]);
+    }
+}
+
+/*
+ * 数列の逆離散フーリエ変換を計算して返す．
+ *
+ * @param [in/out] a 数列．変換後の数列を上書きして返す．
+ */
+void NttMod19529729Deg131072::Idft(ll *a) const {
+    Reverse(a);
+
+    ll m = log_n_;
+
+    for (ll l = 1; l <= m; l++) {
+        ll max_q = (1 << (m - l));
+        for (ll q = 0; q < max_q; q++) {
+            ll max_r = (1 << (l - 1));
+            for (ll r = 0; r < max_r; r++) {
+                ll k = (q << l) + r;
+                ButterflyInv(a[k], a[k + max_r], r << (m - l));
+            }
+        }
+    }
+
+    for (ll i = 0; i < n_; i++) {
+        a[i] = montgomery_.Mult(a[i], n_inv_);
+    }
+}
+
+/*
+ * バタフライ演算を実行して結果を返す．
+ *
+ * @param [in/out] a 要素
+ * @param [in/out] b 要素
+ * @param [in] k 指数
+ */
+void NttMod19529729Deg131072::Butterfly(ll& a, ll& b, ll k) const {
+    ll tmp = montgomery_.Mult(PowOmega(k), b);
+    ll minus_tmp = mod_ - tmp;
+
+    b = a + minus_tmp;
+    b = (b >= mod_) ? b - mod_ : b;
+
+    a = a + tmp;
+    a = (a >= mod_) ? a - mod_ : a;
+}
+
+/*
+ * 逆離散フーリエ変換でのバタフライ演算を実行して結果を返す．
+ *
+ * @param [in/out] a 要素
+ * @param [in/out] b 要素
+ * @param [in] k 指数
+ */
+void NttMod19529729Deg131072::ButterflyInv(ll& a, ll& b, ll k) const {
+    ll tmp = montgomery_.Mult(PowPhi(k), b);
+    ll minus_tmp = mod_ - tmp;
+
+    b = a + minus_tmp;
+    b = (b >= mod_) ? b - mod_ : b;
+
+    a = a + tmp;
+    a = (a >= mod_) ? a - mod_ : a;
+}
+
+/*
  * 1 の n 乗根のべき乗を計算して返す．
  *
  * @param [in] k 指数
  * @return ll 1 の n 乗根の k 乗
  */
 ll NttMod19529729Deg131072::PowOmega(ll k) const {
-    return Pow(omega_, k);
+    return montgomery_.Pow(omega_, k);
 }
 
 /*
@@ -337,7 +412,7 @@ ll NttMod19529729Deg131072::PowOmega(ll k) const {
  * @return ll 1 の n 乗根の逆数の k 乗
  */
 ll NttMod19529729Deg131072::PowPhi(ll k) const {
-    return Pow(phi_, k);
+    return montgomery_.Pow(phi_, k);
 }
 
 } // namespace ntt
