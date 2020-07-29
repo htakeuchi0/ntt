@@ -1,6 +1,7 @@
 # compilers
 CXX = g++
-CXXFLAGS = -std=c++17 -O3 -g -Wall --pedantic-errors -fsanitize=address -fno-omit-frame-pointer
+# CXXFLAGS = -std=c++17 -O3 -g -Wall --pedantic-errors -fsanitize=address -fno-omit-frame-pointer
+CXXFLAGS = -std=c++17 -O3 -g -Wall
 MAIN_TARGET = build
 TEST_TARGET = test
 
@@ -27,7 +28,7 @@ DOXYGEN = doxygen
 BROWSER = firefox
 INDEXPATH = doxygen/html/index.html
 
-.PHONY: all clean main test
+.PHONY: all clean main test docs
 
 all: $(MAIN_TARGET) $(TEST_TARGET)
 

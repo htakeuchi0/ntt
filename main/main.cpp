@@ -6,60 +6,21 @@
 #include "include/util.hpp"
 #include "include/montgomery.hpp"
 #include "include/ntt.hpp"
+#include <array>
 #include <iostream>
+#include <chrono>
+#include <cmath>
 
 namespace {
 
 /**
- * べき乗を計算して返す．
- *
- * @param [in] x 基数
- * @param [in] k 指数
- * @param [in] n モジュラス
- * @return ll x の k 乗
- */
-ntt::ll Pow(ntt::ll x, ntt::ll k, ntt::ll n) {
-    ntt::ll p = x;
-    ntt::ll v = 1;
-    if (k == 0) {
-        return v;
-    }
-
-    while (k >= 1) {
-        if ((k & 1) == 1) {
-            v = (v * p) % n;
-        }
-        k >>= 1;
-        p = (p * p) % n;
-    }
-
-    return v;
-}
-
-/**
- * モンゴメリ乗算の実行サンプルを出力する．
- */
-void MontgomerySample() {
-    ntt::NttNativeMod19529729Deg131072 ntt;
-    ntt::MontgomeryMod19529729R25 montgomery;
-
-    ntt::ll a = 12345678;
-    ntt::ll b = 87654321;
-    ntt::ll ab = montgomery.Mult(a, b);
-    ntt::ll a_pow_b = montgomery.Pow(a, b);
-
-    std::cout << "(montgomery) ab = " << ab << std::endl;
-    std::cout << "(naive     ) ab = " << (a * b) % montgomery.N() << std::endl;
-
-    std::cout << "(montgomery) a^b = " << a_pow_b << std::endl;
-    std::cout << "(naive     ) a^b = " << Pow(a, b, montgomery.N()) << std::endl;
-}
-
-/**
  * Number theoretic transform の実行サンプルを出力する．
+ *
+ * @param[in] ntt NTTオブジェクト
+ * @param[in] is_show_mode 標準出力する場合true
+ * @return double 実行時間 [ms]
  */
-void NttSample() {
-    ntt::NttMod19529729Deg131072 ntt;
+double NttSample(const ntt::Ntt& ntt, bool is_show_mode) {
     int size = ntt.N();
 
     ntt::ll *a = new ntt::ll[size];
@@ -77,24 +38,33 @@ void NttSample() {
     a[2] = b[2] = 3;
     a[3] = b[3] = 4;
     
-    std::cout << "a    : ";
-    for (int i = 0; i < 7; i++) {
-        std::cout << a[i] << "\t";
-    }
-    std::cout << std::endl;
+    if (is_show_mode) {
+        std::cout << "a    : ";
+        for (int i = 0; i < 7; i++) {
+            std::cout << a[i] << "\t";
+        }
+        std::cout << std::endl;
 
-    std::cout << "b    : ";
-    for (int i = 0; i < 7; i++) {
-        std::cout << b[i] << "\t";
+        std::cout << "b    : ";
+        for (int i = 0; i < 7; i++) {
+            std::cout << b[i] << "\t";
+        }
+        std::cout << std::endl;
     }
-    std::cout << std::endl;
 
+    auto begin = std::chrono::system_clock::now();
     ntt.Mult(a, b, c);
-    std::cout << "a * b: ";
-    for (int i = 0; i < 7; i++) {
-        std::cout << c[i] << "\t";
+    auto end = std::chrono::system_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
+    double elapsed_time = static_cast<double>(elapsed.count());
+
+    if (is_show_mode) {
+        std::cout << "a * b: ";
+        for (int i = 0; i < 7; i++) {
+            std::cout << c[i] << "\t";
+        }
+        std::cout << std::endl;
     }
-    std::cout << std::endl;
 
     delete[] a;
     a = nullptr;
@@ -104,21 +74,131 @@ void NttSample() {
 
     delete[] c;
     c = nullptr;
+
+    return elapsed_time;
+}
+
+/**
+ * 素朴な実装の畳み込み演算の実行サンプルを出力する．
+ *
+ * @param[in] is_show_mode 標準出力する場合true
+ * @return double 実行時間 [ms]
+ */
+double NttNaiveSample(bool is_show_mode) {
+    ntt::NttNaiveMod19529729Deg131072 ntt;
+    double elapsed = NttSample(ntt, is_show_mode);
+    return elapsed;
+}
+
+/**
+ * 素朴な実装の Number theoretic transform の実行サンプルを出力する．
+ *
+ * @param[in] is_show_mode 標準出力する場合true
+ * @return double 実行時間 [ms]
+ */
+double NttBasicSample(bool is_show_mode) {
+    ntt::NttMod19529729Deg131072 ntt;
+    double elapsed = NttSample(ntt, is_show_mode);
+    return elapsed;
+}
+
+/**
+ * モンゴメリ乗算を利用した Number theoretic transform の実行サンプルを出力する．
+ *
+ * @param[in] is_show_mode 標準出力する場合true
+ * @return double 実行時間 [ms]
+ */
+double NttMontgomerySample(bool is_show_mode) {
+    ntt::NttMod19529729Deg131072M ntt;
+    double elapsed = NttSample(ntt, is_show_mode);
+    return elapsed;
+}
+
+/**
+ * 配列の要素の平均を計算して返す．
+ *
+ * @param[in] array 配列
+ * @return double 平均
+ */
+template <size_t N>
+double Mean(const std::array<double, N>& array) {
+    double mean = 0.0;
+    for (double entry : array) {
+        mean += entry;
+    }
+    mean /= array.size();
+    return mean;
+}
+
+/**
+ * 配列の要素の標準偏差を計算して返す．
+ *
+ * @param[in] array 配列
+ * @return double 標準偏差
+ */
+template <size_t N>
+double Std(const std::array<double, N>& array) {
+    double mean = Mean(array);
+
+    double std = 0.0;
+    for (double entry : array) {
+        double diff = entry - mean;
+        std += diff * diff;
+    }
+    std /= array.size();
+    std = ::sqrt(std);
+    return std;
 }
 
 /**
  * サンプルを表示する．
  *
- * @param [in] sample_name サンプル名
- * @param [in] sample サンプルメソッド
+ * @param[in] sample_name サンプル名
+ * @param[in] sample サンプルメソッド
+ * @param[in] times 実行回数
  */
-void ShowSample(std::string sample_name, void (*sample)(void)) {
+void ShowSample(std::string sample_name, double (*sample)(bool), int times = 10) {
     std::cout << sample_name << std::endl;
-    sample();
+    std::array<double, 10> elapsed_times;
+
+    double elapsed_time = sample(true);
+    elapsed_times[0] = elapsed_time;
+
+    std::cout << "\n";
+    std::cout << "running......" << std::flush;
+    for (int i = 1; i < times; i++) {
+        double elapsed_time = sample(false);
+        elapsed_times[i] = elapsed_time;
+    }
+    std::cout << "end\n" << std::endl;
+
+    double mean = Mean(elapsed_times);
+    double std = Std(elapsed_times);
+
+    std::cout << "elapsed: \n";
+    std::cout << "- repeat: " << times << "\n";
+    std::cout << "- mean  : " << mean << " [ms]\n";
+    std::cout << "- std   : " << std << "\n";
     std::cout << std::endl;
 }
 
 } // namespace
+
+/**
+ * ヘルプを表示する．
+ *
+ * @param[in, out] out 出力先
+ * @param[in] program_name プログラム名
+ */
+void ShowHelp(std::ostream& out, const std::string& program_name) {
+    out << "Usage:\n";
+    out << "$ " << program_name << " [--naive]\n";
+    out << "$ " << program_name << " [--help]\n";
+    out << "\n";
+    out << "Arguments:\n";
+    out << "--naive, -n : Also execute the naive NTT\n";
+    out << "--help, -h  : Show the help message and exit" << std::endl;
+}
 
 /**
  * メインメソッド
@@ -128,7 +208,23 @@ void ShowSample(std::string sample_name, void (*sample)(void)) {
  * @return int 終了コード
  */
 int main(int argc, char **argv) {
-    ShowSample("---- Montgomery ----", MontgomerySample);
-    ShowSample("----    Ntt     ----", NttSample);
+    bool do_naive = false;
+    if (argc >= 2) {
+        std::string arg(argv[1]);
+        do_naive = (arg == std::string("--naive") || arg == std::string("-n"));
+
+        if (arg == std::string("--help") || arg == std::string("-h")) {
+            ShowHelp(std::cout, std::string(argv[0]));
+            return 0;
+        }
+    }
+
+    if (do_naive) {
+        int times = 1;
+        ShowSample("---- NTT (Naive)       ----", NttNaiveSample, times);
+    }
+
+    ShowSample("---- NTT (Basic)       ----", NttBasicSample);
+    ShowSample("---- NTT (Montgomery)  ----", NttMontgomerySample);
     return 0;
 }

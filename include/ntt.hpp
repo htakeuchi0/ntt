@@ -79,7 +79,7 @@ public:
 /**
  * Number theoretic transform のための素朴な実装のためのクラス．
  */
-class NttNative : public Ntt {
+class NttNaive : public Ntt {
 
 public:
     /**
@@ -91,7 +91,7 @@ public:
      * @param[in] n 次数．
      * @param[in] n_inv 次数の逆元．
      */
-    NttNative(ll mod, ll omega, ll phi, ll n, ll n_inv);
+    NttNaive(ll mod, ll omega, ll phi, ll n, ll n_inv);
 
     /**
      * 次数を返す．
@@ -310,11 +310,11 @@ private:
 /**
  * モジュラス 337, 次数 8 のNumber theoretic transform の素朴な実装のためのクラス．
  */
-class NttNativeMod337Deg8 : public NttNative {
+class NttNaiveMod337Deg8 : public NttNaive {
 
 public:
     /** コンストラクタ */
-    NttNativeMod337Deg8();
+    NttNaiveMod337Deg8();
 
 private:
     /** モジュラス */
@@ -334,13 +334,59 @@ private:
 };
 
 /**
- * モジュラス 19529729, 次数 131072 のNumber theoretic transform のためのクラス．
+ * モジュラス 19529729, 次数 131072 の Number theoretic transform のためのクラス．
  */
 class NttMod19529729Deg131072 : public NttBase {
 
 public:
     /* コンストラクタ */
     NttMod19529729Deg131072();
+
+    /**
+     * 1 の n 乗根のべき乗を計算して返す．
+     *
+     * @param[in] k 指数
+     * @return ll 1 の n 乗根の k 乗
+     */
+    virtual ll PowOmega(ll k) const;
+
+    /**
+     * 1 の n 乗根の逆元のべき乗を計算して返す．
+     *
+     * @param[in] k 指数
+     * @return ll 1 の n 乗根の逆数の k 乗
+     */
+    virtual ll PowPhi(ll k) const;
+
+private:
+    /** モジュラス */
+    static constexpr ll kMod = 19529729;
+
+    /** 1 の n 乗根 */
+    static constexpr ll kOmega = 770;
+
+    /** 1 の n 乗根の逆元 */
+    static constexpr ll kPhi = 16765131;
+
+    /** 次数 */
+    static constexpr ll kN = 131072;
+
+    /** 次数の逆元 */
+    static constexpr ll kNInv = 19529580;
+
+    /** 次数が 2 の何乗か */
+    static constexpr ll kLogN = 17;
+};
+
+/**
+ * モジュラス 19529729, 次数 131072 の Montgomery 乗算を使った
+ * Number theoretic transform のためのクラス．
+ */
+class NttMod19529729Deg131072M : public NttBase {
+
+public:
+    /* コンストラクタ */
+    NttMod19529729Deg131072M();
 
     /**
      * バタフライ演算を実行して結果を返す．
@@ -418,11 +464,11 @@ private:
 /**
  * モジュラス 19529729, 次数 131072 のNumber theoretic transform の素朴な実装のためのクラス．
  */
-class NttNativeMod19529729Deg131072 : public NttNative {
+class NttNaiveMod19529729Deg131072 : public NttNaive {
 
 public:
     /* コンストラクタ */
-    NttNativeMod19529729Deg131072();
+    NttNaiveMod19529729Deg131072();
 
 private:
     /** モジュラス */

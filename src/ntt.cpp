@@ -70,7 +70,7 @@ void Ntt::Mult(ll *a, ll *b, ll *c) const {
  *
  * @param [in/out] 数列．変換後の数列を上書きして返す．
  */
-void NttNative::Dft(ll *a) const {
+void NttNaive::Dft(ll *a) const {
     ll *c = new ll[n_];
     for (ll i = 0; i < n_; i++) {
         c[i] = 0;
@@ -92,7 +92,7 @@ void NttNative::Dft(ll *a) const {
  *
  * @param [in/out] a 数列．変換後の数列を上書きして返す．
  */
-void NttNative::Idft(ll *a) const {
+void NttNaive::Idft(ll *a) const {
     ll *c = new ll[n_];
     for (ll i = 0; i < n_; i++) {
         c[i] = 0;
@@ -120,7 +120,7 @@ void NttNative::Idft(ll *a) const {
  * @param [in] k 指数
  * @return ll x の k 乗
  */
-ll NttNative::Pow(ll x, ll k) const {
+ll NttNaive::Pow(ll x, ll k) const {
     ll p = x;
     ll v = 1;
     if (k == 0) {
@@ -270,7 +270,7 @@ ll NttMod337Deg8::PowPhi(ll k) const {
  * @param [in] n 次数．
  * @param [in] n_inv 次数の逆元．
  */
-NttNative::NttNative(ll mod, ll omega, ll phi, ll n, ll n_inv) : 
+NttNaive::NttNaive(ll mod, ll omega, ll phi, ll n, ll n_inv) : 
         mod_(mod), omega_(omega), phi_(phi), n_(n), n_inv_(n_inv){}
 
 /*
@@ -307,8 +307,8 @@ NttMod337Deg8::NttMod337Deg8() :
 }
 
 /* コンストラクタ */
-NttNativeMod337Deg8::NttNativeMod337Deg8() :
-        NttNative(kMod, kOmega, kPhi, kN, kNInv) {}
+NttNaiveMod337Deg8::NttNaiveMod337Deg8() :
+        NttNaive(kMod, kOmega, kPhi, kN, kNInv) {}
 
 /* コンストラクタ */
 NttMod19529729Deg131072::NttMod19529729Deg131072() :
@@ -316,8 +316,33 @@ NttMod19529729Deg131072::NttMod19529729Deg131072() :
 }
 
 /* コンストラクタ */
-NttNativeMod19529729Deg131072::NttNativeMod19529729Deg131072() :
-        NttNative(kMod, kOmega, kPhi, kN, kNInv) {
+NttMod19529729Deg131072M::NttMod19529729Deg131072M() :
+        NttBase(kMod, kOmega, kPhi, kN, kNInv, kLogN) {
+}
+
+/* コンストラクタ */
+NttNaiveMod19529729Deg131072::NttNaiveMod19529729Deg131072() :
+        NttNaive(kMod, kOmega, kPhi, kN, kNInv) {
+}
+
+/*
+ * 1 の n 乗根のべき乗を計算して返す．
+ *
+ * @param [in] k 指数
+ * @return ll 1 の n 乗根の k 乗
+ */
+ll NttMod19529729Deg131072::PowOmega(ll k) const {
+    return Pow(omega_, k);
+}
+
+/*
+ * 1 の n 乗根の逆元のべき乗を計算して返す．
+ *
+ * @param [in] k 指数
+ * @return ll 1 の n 乗根の逆数の k 乗
+ */
+ll NttMod19529729Deg131072::PowPhi(ll k) const {
+    return Pow(phi_, k);
 }
 
 /*
@@ -327,7 +352,7 @@ NttNativeMod19529729Deg131072::NttNativeMod19529729Deg131072() :
  * @param [in] b 数列．
  * @param [out] c 数列 a と b の要素ごとの積．
  */
-void NttMod19529729Deg131072::MultVec(ll *a, ll *b, ll *c) const {
+void NttMod19529729Deg131072M::MultVec(ll *a, ll *b, ll *c) const {
     for (ll i = 0; i < n_; i++) {
         c[i] = montgomery_.Mult(a[i], b[i]);
     }
@@ -338,7 +363,7 @@ void NttMod19529729Deg131072::MultVec(ll *a, ll *b, ll *c) const {
  *
  * @param [in/out] a 数列．変換後の数列を上書きして返す．
  */
-void NttMod19529729Deg131072::Idft(ll *a) const {
+void NttMod19529729Deg131072M::Idft(ll *a) const {
     Reverse(a);
 
     ll m = log_n_;
@@ -366,7 +391,7 @@ void NttMod19529729Deg131072::Idft(ll *a) const {
  * @param [in/out] b 要素
  * @param [in] k 指数
  */
-void NttMod19529729Deg131072::Butterfly(ll& a, ll& b, ll k) const {
+void NttMod19529729Deg131072M::Butterfly(ll& a, ll& b, ll k) const {
     ll tmp = montgomery_.Mult(PowOmega(k), b);
     ll minus_tmp = mod_ - tmp;
 
@@ -384,7 +409,7 @@ void NttMod19529729Deg131072::Butterfly(ll& a, ll& b, ll k) const {
  * @param [in/out] b 要素
  * @param [in] k 指数
  */
-void NttMod19529729Deg131072::ButterflyInv(ll& a, ll& b, ll k) const {
+void NttMod19529729Deg131072M::ButterflyInv(ll& a, ll& b, ll k) const {
     ll tmp = montgomery_.Mult(PowPhi(k), b);
     ll minus_tmp = mod_ - tmp;
 
@@ -401,7 +426,7 @@ void NttMod19529729Deg131072::ButterflyInv(ll& a, ll& b, ll k) const {
  * @param [in] k 指数
  * @return ll 1 の n 乗根の k 乗
  */
-ll NttMod19529729Deg131072::PowOmega(ll k) const {
+ll NttMod19529729Deg131072M::PowOmega(ll k) const {
     return montgomery_.Pow(omega_, k);
 }
 
@@ -411,7 +436,7 @@ ll NttMod19529729Deg131072::PowOmega(ll k) const {
  * @param [in] k 指数
  * @return ll 1 の n 乗根の逆数の k 乗
  */
-ll NttMod19529729Deg131072::PowPhi(ll k) const {
+ll NttMod19529729Deg131072M::PowPhi(ll k) const {
     return montgomery_.Pow(phi_, k);
 }
 
