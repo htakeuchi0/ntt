@@ -4,6 +4,7 @@
  */
 
 #include "include/ntt.hpp"
+#include <iostream>
 
 /*
  * Number theoretic transform 向け名前空間
@@ -147,16 +148,15 @@ void NttBase::Dft(ll *a) const {
 
     ll m = log_n_;
 
-    ll max_r = 1;
-    for (ll l = 0; l < m; l++) {
-        ll max_q = n_ / max_r;
-        for (ll q = 0; q < max_q; q += 2) {
+    for (ll l = 1; l <= m; l++) {
+        ll max_q = (1 << (m - l));
+        for (ll q = 0; q < max_q; q++) {
+            ll max_r = (1 << (l - 1));
             for (ll r = 0; r < max_r; r++) {
-                ll k = max_r*q + r;
-                Butterfly(a[k], a[k + max_r], (max_q >> 1)*r);
+                ll k = (1 << l)*q + r;
+                Butterfly(a[k], a[k + max_r], (1 << (m - l))*r);
             }
         }
-        max_r <<= 1;
     }
 }
 
@@ -170,16 +170,15 @@ void NttBase::Idft(ll *a) const {
 
     ll m = log_n_;
 
-    ll max_r = 1;
-    for (ll l = 0; l < m; l++) {
-        ll max_q = n_ / max_r;
-        for (ll q = 0; q < max_q; q += 2) {
+    for (ll l = 1; l <= m; l++) {
+        ll max_q = (1 << (m - l));
+        for (ll q = 0; q < max_q; q++) {
+            ll max_r = (1 << (l - 1));
             for (ll r = 0; r < max_r; r++) {
-                ll k = max_r*q + r;
-                ButterflyInv(a[k], a[k + max_r], (max_q >> 1)*r);
+                ll k = (1 << l)*q + r;
+                ButterflyInv(a[k], a[k + max_r], (1 << (m - l))*r);
             }
         }
-        max_r <<= 1;
     }
 
     for (ll i = 0; i < n_; i++) {

@@ -227,7 +227,7 @@ $(f_k)_{k=0,1,\dots,N-1}$ を $R$ の点列とし，
 		F_k^{(l)}=F_r^{\mathcal{B}(a'_{m-l-1})\mathcal{B}(a'_{m-l-2})\cdots\mathcal{B}(a'_0)}
 	\end{align}
 	とする．
-	このとき，$l=1,2,\dots,m-1$ について，$k=2^lq+r$, $r=0,1,\dots,2^{l-1}-1$, $q=0,1,\dots,2^{m-l-1}$ において，
+	このとき，$l=1,2,\dots,m$ について，$k=2^lq+r$, $r=0,1,\dots,2^{l-1}-1$, $q=0,1,\dots,2^{m-l}-1$ において，
 	\begin{align}
 		&F_k^{(l)}=F_k^{(l-1)}+\omega_{N/2^{m-l}}^rF_{k+2^{l-1}}^{(l-1)},\\
 		&F_{k+2^{l-1}}^{(l)}=F_k^{(l-1)}-\omega_{N/2^{m-l}}^rF_{k+2^{l-1}}^{(l-1)}
@@ -310,7 +310,7 @@ $(f_k)_{k=0,1,\dots,N-1}$ を $R$ の点列とし，
 	$k=2^{m-1}0+k$ より，
 	\begin{align*}
 		&F_k^{(m-1)}+\omega_N^kF_{k+2^{m-1}}^{(m-1)}\\
-		&=F_k^{\mathcal{0}}+\omega_N^kF_k^{\mathcal{1}}\\
+		&=F_k^{\mathcal{B}(0)}+\omega_N^kF_k^{\mathcal{B}(1)}\\
 		&=F_k^e+\omega_N^kF_k^o\\
 		&=F_k\\
 		&=F_k^{(m)}
@@ -319,7 +319,7 @@ $(f_k)_{k=0,1,\dots,N-1}$ を $R$ の点列とし，
 	\begin{align*}
 		&F_{k+2^{m-1}}^{(m)}\\
 		&=F_{k+2^{m-1}}\\
-		&=F_k^{\mathcal{0}}-\omega_N^kF_k^{\mathcal{1}}\\
+		&=F_k^{\mathcal{B}(0)}-\omega_N^kF_k^{\mathcal{B}(1)}\\
 		&=F_k^e-\omega_N^kF_k^o\\
 		&=F_k^{(m-1)}-\omega_N^kF_{k+2^{m-1}}^{(m-1)}
 	\end{align*}
@@ -333,11 +333,11 @@ $(f_k)_{k=0,1,\dots,N-1}$ を $R$ の点列とし，
 	ただし，$a\leftarrow b$ で，$a$ の値を $b$ で上書きすることを表す．
 	\begin{enumerate}
 		\item $(f_0,f_1,\dots,f_{N-1})$\\
-			\quad\quad$\leftarrow (f_{R_m(0)},f_{R_m(1)},\dots,f_{R_m(N-1)})$
+			\quad$\leftarrow (f_{R_m(0)},f_{R_m(1)},\dots,f_{R_m(N-1)})$
 		\item $(f_k,f_{k+2^l})$\\
-			\quad\quad$\leftarrow (f_k+\omega_{N/2^{m-l}}^kf_{k+2^l},f_k-\omega_{N/2^{m-l}}^kf_{k+2^l})$,\\
-			$k=2^lq+r$, $r=0,1,\dots,2^{l-1}-1$,\\
-			$q=0,1,\dots,2^{m-l-1}$, $l=1,2,\dots,m-1$
+			\quad$\leftarrow (f_k+\omega_{N/2^{m-l}}^rf_{k+2^{l-1}},f_k-\omega_{N/2^{m-l}}^rf_{k+2^{l-1}})$,\\
+			$k=2^lq+r$,\quad $r=0,1,\dots,2^{l-1}-1$,\\
+			$q=0,1,\dots,2^{m-l}-1$,\quad $l=1,2,\dots,m$
 		\item $(F_0,F_1,\dots,F_{N-1})\leftarrow (f_0,f_1,\dots,f_{N-1})$.
 	\end{enumerate}
 \end{thm}
