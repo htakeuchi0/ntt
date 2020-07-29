@@ -153,8 +153,8 @@ void NttBase::Dft(ll *a) const {
         for (ll q = 0; q < max_q; q++) {
             ll max_r = (1 << (l - 1));
             for (ll r = 0; r < max_r; r++) {
-                ll k = (1 << l)*q + r;
-                Butterfly(a[k], a[k + max_r], (1 << (m - l))*r);
+                ll k = (q << l) + r;
+                Butterfly(a[k], a[k + max_r], r << (m - l));
             }
         }
     }
@@ -175,8 +175,8 @@ void NttBase::Idft(ll *a) const {
         for (ll q = 0; q < max_q; q++) {
             ll max_r = (1 << (l - 1));
             for (ll r = 0; r < max_r; r++) {
-                ll k = (1 << l)*q + r;
-                ButterflyInv(a[k], a[k + max_r], (1 << (m - l))*r);
+                ll k = (q << l) + r;
+                ButterflyInv(a[k], a[k + max_r], r << (m - l));
             }
         }
     }
@@ -341,43 +341,3 @@ ll NttMod19529729Deg131072::PowPhi(ll k) const {
 }
 
 } // namespace ntt
-
-/*
-int main() {
-    int size = 131072;
-    ntt::ll *a = new ntt::ll[size];
-    ntt::ll *b = new ntt::ll[size];
-    ntt::ll *c = new ntt::ll[size];
-
-    for (int i = 0; i < size; i++) {
-        a[i] = 0;
-        b[i] = 0;
-        c[i] = 0;
-    }
-
-    a[0] = b[0] = 0;
-    a[1] = b[1] = 1;
-    a[2] = b[2] = 2;
-    a[3] = b[3] = 3;
-    
-    // ntt::NttMod337Deg8 ntt;
-    // ntt::NttNativeMod337Deg8 ntt;
-    ntt::NttMod19529729Deg131072 ntt;
-    // ntt::NttNativeMod19529729Deg131072 ntt;
-    ntt.Mult(a, b, c);
-
-    for (int i = 0; i < size; i++) {
-        std::cout << c[i] << "\t";
-    }
-    std::cout << std::endl;
-
-    delete[] a;
-    a = nullptr;
-
-    delete[] b;
-    b = nullptr;
-
-    delete[] c;
-    c = nullptr;
-}
-*/
