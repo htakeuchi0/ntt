@@ -13,8 +13,8 @@ namespace ntt {
 /*
  * コンストラクタ．
  *
- * @param [in] n モジュラスN
- * @param [in] log2r R>N が 2 の何乗か
+ * @param[in] n モジュラスN
+ * @param[in] log2r R>N が 2 の何乗か
  */
 Montgomery::Montgomery(int n, int log2r) : n_(n), r_(1 << log2r), log2r_(log2r) {
     nn_ = ComputeNn(); 
@@ -23,6 +23,8 @@ Montgomery::Montgomery(int n, int log2r) : n_(n), r_(1 << log2r), log2r_(log2r) 
 
 /*
  * mod R で NN' = -1 を満たす N を計算して返す．
+ *
+ * @return ll mod R で NN' = -1 を満たす N
  */
 ll Montgomery::ComputeNn() const {
     ll nn = 0;
@@ -41,7 +43,8 @@ ll Montgomery::ComputeNn() const {
 /*
  * モンゴメリリダクションを返す．
  *
- * @param [in] t リダクションを計算する値
+ * @param[in] t リダクションを計算する値
+ * @return ll モンゴメリリダクション
  */
 ll Montgomery::Reduction(ll t) const {
     t = (t + ((t * nn_) & (r_ - 1))*n_) >> log2r_;
@@ -51,8 +54,8 @@ ll Montgomery::Reduction(ll t) const {
 /*
  * mod N で積を計算して返す．
  *
- * @param [in] a 値
- * @param [in] b 値
+ * @param[in] a 値
+ * @param[in] b 値
  * @return ll a と b の積
  */
 ll Montgomery::Mult(ll a, ll b) const {
@@ -63,8 +66,8 @@ ll Montgomery::Mult(ll a, ll b) const {
 /*
  * mod N でべき乗を計算して返す．
  *
- * @param [in] a 基数
- * @param [in] k 指数
+ * @param[in] a 基数
+ * @param[in] k 指数
  * @return ll a の b 乗
  */
 ll Montgomery::Pow(ll a, ll k) const {

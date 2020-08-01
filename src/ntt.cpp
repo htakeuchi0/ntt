@@ -14,7 +14,7 @@ namespace ntt {
 /*
  * 数列をビット反転で並び替えて返す．
  *
- * @param [in/out] a 数列．変換後の数列を上書きして返す．
+ * @param[in,out] a 数列．変換後の数列を上書きして返す．
  */
 void Ntt::Reverse(ll *a) const {
     ll j = 0;
@@ -38,9 +38,9 @@ void Ntt::Reverse(ll *a) const {
 /*
  * 数列の要素ごとの積を計算して返す．
  *
- * @param [in] a 数列．
- * @param [in] b 数列．
- * @param [out] c 数列 a と b の要素ごとの積．
+ * @param[in] a 数列．
+ * @param[in] b 数列．
+ * @param[out] c 数列 a と b の要素ごとの積．
  */
 void Ntt::MultVec(ll *a, ll *b, ll *c) const {
     ll n = N();
@@ -54,9 +54,9 @@ void Ntt::MultVec(ll *a, ll *b, ll *c) const {
 /*
  * 数列の畳み込みを計算して返す．
  *
- * @param [in] a 数列．
- * @param [in] b 数列．
- * @param [out] c 数列 a と b の畳み込み．
+ * @param[in] a 数列．
+ * @param[in] b 数列．
+ * @param[out] c 数列 a と b の畳み込み．
  */
 void Ntt::Mult(ll *a, ll *b, ll *c) const {
     Dft(a);
@@ -68,7 +68,7 @@ void Ntt::Mult(ll *a, ll *b, ll *c) const {
 /*
  * 数列の離散フーリエ変換を計算して返す．
  *
- * @param [in/out] 数列．変換後の数列を上書きして返す．
+ * @param[in,out] 数列．変換後の数列を上書きして返す．
  */
 void NttNaive::Dft(ll *a) const {
     ll *c = new ll[n_];
@@ -90,7 +90,7 @@ void NttNaive::Dft(ll *a) const {
 /*
  * 数列の逆離散フーリエ変換を計算して返す．
  *
- * @param [in/out] a 数列．変換後の数列を上書きして返す．
+ * @param[in,out] a 数列．変換後の数列を上書きして返す．
  */
 void NttNaive::Idft(ll *a) const {
     ll *c = new ll[n_];
@@ -116,8 +116,8 @@ void NttNaive::Idft(ll *a) const {
 /*
  * べき乗を計算して返す．
  *
- * @param [in] x 基数
- * @param [in] k 指数
+ * @param[in] x 基数
+ * @param[in] k 指数
  * @return ll x の k 乗
  */
 ll NttNaive::Pow(ll x, ll k) const {
@@ -141,7 +141,7 @@ ll NttNaive::Pow(ll x, ll k) const {
 /*
  * 数列の離散フーリエ変換を計算して返す．
  *
- * @param [in/out] 数列．変換後の数列を上書きして返す．
+ * @param[in,out] 数列．変換後の数列を上書きして返す．
  */
 void NttBase::Dft(ll *a) const {
     Reverse(a);
@@ -163,7 +163,7 @@ void NttBase::Dft(ll *a) const {
 /*
  * 数列の逆離散フーリエ変換を計算して返す．
  *
- * @param [in/out] a 数列．変換後の数列を上書きして返す．
+ * @param[in,out] a 数列．変換後の数列を上書きして返す．
  */
 void NttBase::Idft(ll *a) const {
     Reverse(a);
@@ -189,9 +189,9 @@ void NttBase::Idft(ll *a) const {
 /*
  * バタフライ演算を実行して結果を返す．
  *
- * @param [in/out] a 要素
- * @param [in/out] b 要素
- * @param [in] k 指数
+ * @param[in,out] a 要素
+ * @param[in,out] b 要素
+ * @param[in] k 指数
  */
 void NttBase::Butterfly(ll& a, ll& b, ll k) const {
     ll tmp = (PowOmega(k) * b) % mod_;
@@ -204,9 +204,9 @@ void NttBase::Butterfly(ll& a, ll& b, ll k) const {
 /*
  * 逆離散フーリエ変換でのバタフライ演算を実行して結果を返す．
  *
- * @param [in/out] a 要素
- * @param [in/out] b 要素
- * @param [in] k 指数
+ * @param[in,out] a 要素
+ * @param[in,out] b 要素
+ * @param[in] k 指数
  */
 void NttBase::ButterflyInv(ll& a, ll& b, ll k) const {
     ll tmp = (PowPhi(k) * b) % mod_;
@@ -219,8 +219,8 @@ void NttBase::ButterflyInv(ll& a, ll& b, ll k) const {
 /*
  * べき乗を計算して返す．
  *
- * @param [in] x 基数
- * @param [in] k 指数
+ * @param[in] x 基数
+ * @param[in] k 指数
  * @return ll x の k 乗
  */
 ll NttBase::Pow(ll x, ll k) const {
@@ -244,7 +244,7 @@ ll NttBase::Pow(ll x, ll k) const {
 /*
  * 1 の n 乗根のべき乗を計算して返す．
  *
- * @param [in] k 指数
+ * @param[in] k 指数
  * @return ll 1 の n 乗根の k 乗
  */
 ll NttMod337Deg8::PowOmega(ll k) const {
@@ -254,7 +254,7 @@ ll NttMod337Deg8::PowOmega(ll k) const {
 /*
  * 1 の n 乗根の逆元のべき乗を計算して返す．
  *
- * @param [in] k 指数
+ * @param[in] k 指数
  * @return ll 1 の n 乗根の逆数の k 乗
  */
 ll NttMod337Deg8::PowPhi(ll k) const {
@@ -264,11 +264,11 @@ ll NttMod337Deg8::PowPhi(ll k) const {
 /*
  * コンストラクタ．
  *
- * @param [in] mod モジュラス．
- * @param [in] omega 1 の n 乗根．
- * @param [in] phi 1 の n 乗根の逆元．
- * @param [in] n 次数．
- * @param [in] n_inv 次数の逆元．
+ * @param[in] mod モジュラス．
+ * @param[in] omega 1 の n 乗根．
+ * @param[in] phi 1 の n 乗根の逆元．
+ * @param[in] n 次数．
+ * @param[in] n_inv 次数の逆元．
  */
 NttNaive::NttNaive(ll mod, ll omega, ll phi, ll n, ll n_inv) : 
         mod_(mod), omega_(omega), phi_(phi), n_(n), n_inv_(n_inv){}
@@ -276,12 +276,12 @@ NttNaive::NttNaive(ll mod, ll omega, ll phi, ll n, ll n_inv) :
 /*
  * コンストラクタ．
  *
- * @param [in] mod モジュラス．
- * @param [in] omega 1 の n 乗根．
- * @param [in] phi 1 の n 乗根の逆元．
- * @param [in] n 次数．
- * @param [in] n_inv 次数の逆元．
- * @param [in] log_n 次数が 2 の何乗か
+ * @param[in] mod モジュラス．
+ * @param[in] omega 1 の n 乗根．
+ * @param[in] phi 1 の n 乗根の逆元．
+ * @param[in] n 次数．
+ * @param[in] n_inv 次数の逆元．
+ * @param[in] log_n 次数が 2 の何乗か
  */
 NttBase::NttBase(ll mod, ll omega, ll phi, ll n, ll n_inv, ll log_n) :
         mod_(mod),
@@ -328,7 +328,7 @@ NttNaiveMod19529729Deg131072::NttNaiveMod19529729Deg131072() :
 /*
  * 1 の n 乗根のべき乗を計算して返す．
  *
- * @param [in] k 指数
+ * @param[in] k 指数
  * @return ll 1 の n 乗根の k 乗
  */
 ll NttMod19529729Deg131072::PowOmega(ll k) const {
@@ -338,7 +338,7 @@ ll NttMod19529729Deg131072::PowOmega(ll k) const {
 /*
  * 1 の n 乗根の逆元のべき乗を計算して返す．
  *
- * @param [in] k 指数
+ * @param[in] k 指数
  * @return ll 1 の n 乗根の逆数の k 乗
  */
 ll NttMod19529729Deg131072::PowPhi(ll k) const {
@@ -348,9 +348,9 @@ ll NttMod19529729Deg131072::PowPhi(ll k) const {
 /*
  * 数列の要素ごとの積を計算して返す．
  *
- * @param [in] a 数列．
- * @param [in] b 数列．
- * @param [out] c 数列 a と b の要素ごとの積．
+ * @param[in] a 数列．
+ * @param[in] b 数列．
+ * @param[out] c 数列 a と b の要素ごとの積．
  */
 void NttMod19529729Deg131072M::MultVec(ll *a, ll *b, ll *c) const {
     for (ll i = 0; i < n_; i++) {
@@ -361,7 +361,7 @@ void NttMod19529729Deg131072M::MultVec(ll *a, ll *b, ll *c) const {
 /*
  * 数列の逆離散フーリエ変換を計算して返す．
  *
- * @param [in/out] a 数列．変換後の数列を上書きして返す．
+ * @param[in,out] a 数列．変換後の数列を上書きして返す．
  */
 void NttMod19529729Deg131072M::Idft(ll *a) const {
     Reverse(a);
@@ -387,9 +387,9 @@ void NttMod19529729Deg131072M::Idft(ll *a) const {
 /*
  * バタフライ演算を実行して結果を返す．
  *
- * @param [in/out] a 要素
- * @param [in/out] b 要素
- * @param [in] k 指数
+ * @param[in,out] a 要素
+ * @param[in,out] b 要素
+ * @param[in] k 指数
  */
 void NttMod19529729Deg131072M::Butterfly(ll& a, ll& b, ll k) const {
     ll tmp = montgomery_.Mult(PowOmega(k), b);
@@ -405,9 +405,9 @@ void NttMod19529729Deg131072M::Butterfly(ll& a, ll& b, ll k) const {
 /*
  * 逆離散フーリエ変換でのバタフライ演算を実行して結果を返す．
  *
- * @param [in/out] a 要素
- * @param [in/out] b 要素
- * @param [in] k 指数
+ * @param[in,out] a 要素
+ * @param[in,out] b 要素
+ * @param[in] k 指数
  */
 void NttMod19529729Deg131072M::ButterflyInv(ll& a, ll& b, ll k) const {
     ll tmp = montgomery_.Mult(PowPhi(k), b);
@@ -423,7 +423,7 @@ void NttMod19529729Deg131072M::ButterflyInv(ll& a, ll& b, ll k) const {
 /*
  * 1 の n 乗根のべき乗を計算して返す．
  *
- * @param [in] k 指数
+ * @param[in] k 指数
  * @return ll 1 の n 乗根の k 乗
  */
 ll NttMod19529729Deg131072M::PowOmega(ll k) const {
@@ -433,7 +433,7 @@ ll NttMod19529729Deg131072M::PowOmega(ll k) const {
 /*
  * 1 の n 乗根の逆元のべき乗を計算して返す．
  *
- * @param [in] k 指数
+ * @param[in] k 指数
  * @return ll 1 の n 乗根の逆数の k 乗
  */
 ll NttMod19529729Deg131072M::PowPhi(ll k) const {

@@ -30,6 +30,8 @@ public:
 
     /**
      * mod R で NN' = -1 を満たす N を計算して返す．
+     *
+     * @return ll mod R で NN' = -1 を満たす N
      */
     ll ComputeNn() const; 
 
@@ -37,6 +39,7 @@ public:
      * モンゴメリリダクションを返す．
      *
      * @param [in] t リダクションを計算する値
+     * @return ll モンゴメリリダクション
      */
     ll Reduction(ll t) const;
 
