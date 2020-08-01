@@ -36,3 +36,9 @@ doxygen/**
 
 # Tests
 googletest*/**
+
+# LaTeX
+*.aux
+*.dvi
+*.ilg
+*.log
