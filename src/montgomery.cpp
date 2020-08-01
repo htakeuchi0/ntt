@@ -26,18 +26,13 @@ Montgomery::Montgomery(int n, int log2r) : n_(n), r_(1 << log2r), log2r_(log2r) 
  */
 ll Montgomery::ComputeNn() const {
     ll nn = 0;
-    ll i = 1;
     ll t = 0;
-    ll r = r_;
-    while (r > 1) {
+    for (int i = 0; i < log2r_; i++) {
         if ((t & 1) == 0) {
             t += n_;
-            nn += i;
+            nn += (1 << i);
         }
-
         t >>= 1;
-        r >>= 1;
-        i <<= 1;
     }
 
     return nn;

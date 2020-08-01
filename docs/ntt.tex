@@ -59,6 +59,13 @@
 \newtheorem{prop}{Proposition}[section]
 \newtheorem{thm}{Theorem}[section]
 \newtheorem{lem}{Lemma}[section]
+\newtheorem{dfn}{Definition}[section]
+\newtheorem{cor}{Corollary}[section]
+
+\newcommand{\Mod}{\,\texttt{\%}\,}
+\newcommand{\BitAnd}{\,\texttt{\&}\,}
+\newcommand{\LeftShift}{\,\texttt{<<}\,}
+\DeclareMathOperator{\MR}{\mathrm{MR}}
 
 \begin{document}
 
@@ -350,6 +357,145 @@ $(f_k)_{k=0,1,\dots,N-1}$ を $R$ の点列とし，
 \end{prop}
 \begin{proof}
 	項番2の反復回数が $O(N\log_2N)$ なので明らか．
+\end{proof}
+
+\section{Montgomery 乗算の導出}
+
+$N>0$ を自然数とする．
+$a,b\in\mathbb{Z}/N\mathbb{Z}$ の積 $ab$ の効率的な計算を考える．
+$x,y\in\mathbb{Z}$ について，$x\Mod y=x-\lfloor x/y\rfloor y$ と定める．
+
+\begin{lem}
+	$0<N<R$, $\mathrm{gcd}(N,R)=1$ とする．
+	$0\le T<NR$ とする．
+	$NN'\equiv-1\pmod{R}$, $0\le N'<R$ とする．
+	$t=(T+(TN'\Mod R)N)/R$ とする．
+	$t<N$ ならば $t=TR^{-1}\Mod N$ であり，
+	$t\ge N$ ならば $t-N=TR^{-1}\Mod N$ である．
+\end{lem}
+\begin{proof}
+	まず，
+	\begin{align*}
+		T+(TN'\Mod R)N&=T+\left(TN'-\left\lfloor\frac{TN'}{R}\right\rfloor R\right)N\\
+		&=T+TNN'-\left\lfloor\frac{TN'}{R}\right\rfloor RN\\
+		&\equiv T+T\cdot(-1)\pmod{R}\\
+		&\equiv0\pmod{R}
+	\end{align*}
+	であるため，$(T+(TN'\Mod R)N)/R\in\mathbb{Z}$ である．
+	次に，$tR=T+(TN'\Mod R)N\equiv T\pmod{N}$ より，$RR'\equiv1\mod{N}$, $0\le R'<N$ をみたす $R'$ を $R^{-1}$ と表すと，$t\equiv TR^{-1}\pmod{N}$ である．
+
+	ここで，$T<RN$ であり，$TN'\Mod R<R$ より $(TN'\Mod R)N<NR$ である．
+	よって，$T+(TN'\Mod R)N<2NR$ より，$t=(T+(TN'\Mod R)N)/R<2N$ である．
+	したがって，$t<N$ ならば $t=TR^{-1}\Mod N$ であり，$t\ge N$ ならば $t-N=TR^{-1}\Mod N$ である．
+\end{proof}
+
+\begin{dfn}
+	$0\le T<NR$ である整数 $T$ について，
+	\begin{align*}
+		\MR(T)=\begin{cases}
+			(T+(TN'\Mod R)N)/R,\\
+			\qquad (T+(TN'\Mod R)N)/R<N,\\
+			(T+(TN'\Mod R)N)/R-N,\\
+			\qquad (T+(TN'\Mod R)N)/R\ge N
+		\end{cases}
+	\end{align*}
+	と定める．
+\end{dfn}
+
+\begin{lem}
+	$\MR(T)\equiv TR^{-1}\pmod{N}$ で，$0\le \MR(T)<N$ である．
+\end{lem}
+\begin{proof}
+	明らか．
+\end{proof}
+
+\begin{thm}
+	$R_2=R^2\Mod N$ とおく．
+	$0\le a<N$, $0\le b<N$ について，$A=\MR(aR_2)$, $B=\MR(bR_2)$, $C=\MR(AB)$ とおくと，$\MR(C)=ab\Mod N$ である．
+\end{thm}
+\begin{proof}
+	$0\le a<N$, $0\le R_2<N$ なので，$0\le aR_2<N^2<NR$ であり，同様に $bR_2<NR$ である．
+	また，$0\le A<N$, $0\le B<N$  なので，$0\le AB<N^2<NR$ である．
+	$R_2R^{-1}\equiv R^2R^{-1}\equiv R\pmod{N}$ なので，
+	\begin{align*}
+		\MR(C)&\equiv CR^{-1}\pmod{N}\\
+		&\equiv\MR(AB)R^{-1}\pmod{N}\\
+		&\equiv(ABR^{-1})R^{-1}\pmod{N}\\
+		&\equiv\MR(aR_2)\MR(bR_2)(R^{-1})^2\pmod{N}\\
+		&\equiv aR_2R^{-1}\cdot bR_2R^{-1}\cdot (R^{-1})^2\pmod{N}\\
+		&\equiv aR\cdot bR\cdot (R^{-1})^2\pmod{N}\\
+		&\equiv ab\pmod{N}
+	\end{align*}
+	である．
+	$0\le \MR(C)<N$ なので，$\MR(C)=ab\Mod N$ である．
+\end{proof}
+
+\begin{cor}
+	$R_2=R^2\Mod N$ とおく．
+	$0\le a<N$, $0\le b<N$, $0\le c<N$ について，$A=\MR(aR_2)$, $B=\MR(bR_2)$, $C=\MR(cR_2)$ とし，$A'=\MR(AB)$, $D=\MR(A'C)$ とおくと，$\MR(D)=abc\Mod N$ である．
+\end{cor}
+\begin{proof}
+	まず，$0\le aR_2<NR$, $0\le bR_2<NR$, $0\le cR_2<NR$, $0\le AB<NR$, $0\le A'C<NR$, $0\le D<NR$ である．
+	次に，
+	\begin{align*}
+		\MR(D)&\equiv DR^{-1}\pmod{N}\\
+		&\equiv \MR(A'C)R^{-1}\pmod{N}\\
+		&\equiv A'C(R^{-1})^2\pmod{N}\\
+		&\equiv \MR(AB)C(R^{-1})^2\pmod{N}\\
+		&\equiv ABC(R^{-1})^3\pmod{N}\\
+		&\equiv aR_2\cdot bR_2\cdot cR_2\cdot(R^{-1})^6\pmod{N}\\
+		&\equiv abc\pmod{N}
+	\end{align*}
+	である．
+	$0\le\MR(D)<N$ なので，$\MR(D)=abc\Mod N$ である．
+\end{proof}
+
+\begin{cor}
+	$R_2=R^2\Mod N$ とおく．
+	$0\le a<N$, $k\ge0$ について，
+	$A_1=\MR(aR_2)$, $A_l=\MR(A_1A_{l-1})$, $l=2,3,\dots,k$ とおくと，$\MR(A_k)=a^k\Mod N$ である．
+\end{cor}
+\begin{proof}
+	$0\le aR_2<NR$, $0\le A_1A_{l-1}<NR$, $l=2,3,\dots,k$ である．
+
+	$1\le l\le k$ について，$A_l\equiv A_1^l(R^{-1})^{l-1}\pmod{N}$ を示す．
+	$A_1\equiv A_1^1(R^{-1})^0\pmod{N}$ より，$l=1$ のとき成り立つ．
+	$2\le l\le k$ のとき，帰納法の仮定より，
+	\begin{align*}
+		A_l&\equiv\MR(A_1A_{l-1})\pmod{N}\\
+		&\equiv A_1A_{l-1}R^{-1}\pmod{N}\\
+		&\equiv A_1\cdot (A_1^{l-1})(R^{-1})^{l-2}R^{-1}\pmod{N}\\
+		&\equiv A_1^l(R^{-1})^{l-1}\pmod{N}
+	\end{align*}
+	である．
+
+	したがって，
+	\begin{align*}
+		\MR(A_k)&\equiv A_kR^{-1}\pmod{N}\\
+		&\equiv A_1^l(R^{-1})^l\pmod{N}\\
+		&\equiv \MR(aR_2)^l(R^{-1})^l\pmod{N}\\
+		&\equiv (aR_2R^{-1})^l(R^{-1})^l\pmod{N}\\
+		&\equiv a^l\pmod{N}
+	\end{align*}
+	である．
+	また，$0\le\MR(A_k)<N$ より，$\MR(A_k)=a^l\Mod N$ である．
+\end{proof}
+
+\begin{lem}
+	$R=2^m$ とする．
+	\begin{align*}
+		\MR(T)=\begin{cases}
+			(T+(TN'\BitAnd (R-1))N)\LeftShift m,\\
+			\qquad (T+(TN'\BitAnd (R-1))N)\LeftShift m<N,\\
+			(T+(TN'\BitAnd (R-1))N)\LeftShift m-N,\\
+			\qquad (T+(TN'\BitAnd (R-1))N)\LeftShift m\ge N
+		\end{cases}
+	\end{align*}
+	である．
+	ただし，$\BitAnd$ はビット積，$\LeftShift$ は左シフト演算を表す．
+\end{lem}
+\begin{proof}
+	明らか．
 \end{proof}
 
 \end{document}
